@@ -32,6 +32,14 @@ export function markOrderPaid(data: {
   });
 }
 
+export function getOrderStatus(orderId: number): any {
+  return orders.get(orderId);
+}
+
+export function getUserOrders(userId: number): any[] {
+  return Array.from(orders.values()).filter(order => order.userId === userId);
+}
+
 export function buildInvoice(userId: number, cart: any) {
   const prices: LabeledPrice[] = cart.items.map((it: any) => ({
     label: it.name,

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { Telegraf } from 'telegraf';
 import { payHandler } from './src/http/pay';
+import { orderStatusHandler } from './src/http/orderStatus';
 import { onPreCheckout, onSuccessfulPayment } from './src/payments';
 
 // Загружаем переменные окружения
@@ -29,6 +30,7 @@ bot.on('message', (ctx, next) => {
 
 // HTTP роуты
 app.post('/api/pay', payHandler);
+app.get('/api/order-status', orderStatusHandler);
 
 // Статическая раздача фронтенда
 app.use(express.static('dist'));
