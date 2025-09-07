@@ -28,9 +28,18 @@
 
 ```
 TELEGRAM_BOT_TOKEN = 8276450519:AAElkwWgkmSOtU1aYGv_NrhPUuDT_SgAH2g
-TG_PROVIDER_TOKEN = 1744374395:TEST:337495814f69076f8fcb
+TG_PROVIDER_TOKEN = <ЮKassa Test provider_token из BotFather>
 PAYMENTS_CURRENCY = RUB
 ```
+
+**Получение ЮKassa Test токена:**
+1. Откройте [@BotFather](https://t.me/BotFather)
+2. `/mybots` → выберите бота → **Bot Settings** → **Payments**
+3. **Connect Provider** → **ЮKassa**
+4. Введите:
+   - **Shop ID**: `1160131`
+   - **API Key**: `test_UVAGYl4S0bRIjQBiIAZx-S1YMcLTjy49zpAtcj4_CeU`
+5. Скопируйте полученный `provider_token`
 
 ### 5. Развернуть
 - Нажмите **"Deploy"**

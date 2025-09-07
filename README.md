@@ -1,11 +1,11 @@
 # CRUSTA MIA - Backend Server
 
-Backend server for CRUSTA MIA Telegram WebApp with Telegram Payments integration.
+Backend server for CRUSTA MIA Telegram WebApp with Telegram Payments integration using ЮKassa Test.
 
 ## 🚀 Features
 
 - **Telegram Bot API** integration with Telegraf
-- **PayMaster Test** payments processing
+- **ЮKassa Test** payments processing
 - **Express.js** server with CORS support
 - **TypeScript** for type safety
 - **Vercel** deployment ready
@@ -46,8 +46,19 @@ Creates and sends invoice to user via Telegram bot.
 Set these in Vercel dashboard:
 
 - `TELEGRAM_BOT_TOKEN` - Your Telegram bot token
-- `TG_PROVIDER_TOKEN` - PayMaster provider token (1744374395:TEST:337495814f69076f8fcb)
+- `TG_PROVIDER_TOKEN` - ЮKassa Test provider token (from BotFather)
 - `PAYMENTS_CURRENCY` - Currency code (RUB)
+
+### Получение ЮKassa Test токена:
+
+1. Откройте [@BotFather](https://t.me/BotFather) в Telegram
+2. Выберите вашего бота: `/mybots` → выберите бота
+3. Нажмите **Bot Settings** → **Payments**
+4. Нажмите **Connect Provider** → **ЮKassa**
+5. Введите данные ЮKassa Test:
+   - **Shop ID**: `1160131`
+   - **API Key**: `test_UVAGYl4S0bRIjQBiIAZx-S1YMcLTjy49zpAtcj4_CeU`
+6. Скопируйте полученный `provider_token` в переменную `TG_PROVIDER_TOKEN`
 
 ## 🛠 Development
 
