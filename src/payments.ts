@@ -46,6 +46,12 @@ export function buildInvoice(userId: number, cart: any) {
     amount: toKopecks((it.price || 0) * (it.qty || 1))
   }));
   
+  // Проверяем минимальную сумму (минимум 1 рубль = 100 копеек)
+  const totalAmount = prices.reduce((sum, price) => sum + price.amount, 0);
+  if (totalAmount < 100) {
+    throw new Error('MINIMUM_AMOUNT_TOO_LOW');
+  }
+  
   const payload = `order:${cart.id}|user:${userId}|ts:${Date.now()}`;
   
   const invoice = {
