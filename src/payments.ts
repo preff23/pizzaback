@@ -63,6 +63,13 @@ export function buildInvoice(userId: number, cart: any) {
     };
   });
   
+  // Проверяем минимальную сумму для ЮKassa (минимум 50 рублей = 5000 копеек)
+  const totalAmount = prices.reduce((sum, price) => sum + price.amount, 0);
+  if (totalAmount < 5000) {
+    console.error('Amount too low for ЮKassa:', { totalAmount, kopecks: totalAmount });
+    throw new Error('MINIMUM_AMOUNT_TOO_LOW');
+  }
+  
   const payload = `order:${cart.id}|user:${userId}|ts:${Date.now()}`;
   
   const invoice = {
