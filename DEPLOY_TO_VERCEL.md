@@ -27,7 +27,7 @@
 В разделе **"Environment Variables"** добавьте:
 
 ```
-TELEGRAM_BOT_TOKEN = 8276450519:AAElkwWgkmSOtU1aYGv_NrhPUuDT_SgAH2g
+TELEGRAM_BOT_TOKEN = 7987254482:AAGlsDPVkKCzvqFRoJMfgNk37Dpt4qbLGfM
 TG_PROVIDER_TOKEN = <ЮKassa Test provider_token из BotFather>
 PAYMENTS_CURRENCY = RUB
 ```
