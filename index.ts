@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { Telegraf } from 'telegraf';
 import { payHandler } from './src/http/pay';
 import { orderStatusHandler } from './src/http/orderStatus';
+import { testHandler } from './src/http/test';
 import { onPreCheckout, onSuccessfulPayment } from './src/payments';
 
 // Загружаем переменные окружения
@@ -31,6 +32,7 @@ bot.on('message', (ctx, next) => {
 // HTTP роуты
 app.post('/api/pay', payHandler);
 app.get('/api/order-status', orderStatusHandler);
+app.get('/api/test', testHandler);
 
 // Статическая раздача фронтенда
 app.use(express.static('dist'));
