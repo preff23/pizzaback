@@ -41,16 +41,27 @@ export function getUserOrders(userId: number): any[] {
 }
 
 export function buildInvoice(userId: number, cart: any) {
-  const prices: LabeledPrice[] = cart.items.map((it: any) => ({
-    label: it.name,
-    amount: toKopecks((it.price || 0) * (it.qty || 1))
-  }));
+  console.log('Building invoice for cart:', {
+    userId,
+    cartId: cart.id,
+    items: cart.items,
+    total: cart.total
+  });
   
-  // Проверяем минимальную сумму (минимум 1 рубль = 100 копеек)
-  const totalAmount = prices.reduce((sum, price) => sum + price.amount, 0);
-  if (totalAmount < 100) {
-    throw new Error('MINIMUM_AMOUNT_TOO_LOW');
-  }
+  const prices: LabeledPrice[] = cart.items.map((it: any) => {
+    const amount = toKopecks((it.price || 0) * (it.qty || 1));
+    console.log('Item price calculation:', {
+      name: it.name,
+      price: it.price,
+      qty: it.qty,
+      amount: amount,
+      kopecks: amount
+    });
+    return {
+      label: it.name,
+      amount: amount
+    };
+  });
   
   const payload = `order:${cart.id}|user:${userId}|ts:${Date.now()}`;
   
@@ -83,7 +94,10 @@ export function buildInvoice(userId: number, cart: any) {
 
 // Отправка инвойса пользователю
 export async function sendInvoiceToUser(userId: number, cart: any, bot: Telegraf) {
+  console.log('sendInvoiceToUser called with:', { userId, cart });
+  
   if (!cart || !cart.items?.length) {
+    console.error('Empty cart error');
     throw new Error('EMPTY_CART');
   }
   
@@ -94,10 +108,18 @@ export async function sendInvoiceToUser(userId: number, cart: any, bot: Telegraf
     title: invoice.title,
     currency: invoice.currency,
     prices: invoice.prices,
-    payload: invoice.payload
+    payload: invoice.payload,
+    provider_token: invoice.provider_token ? 'SET' : 'NOT_SET'
   });
   
-  return bot.telegram.sendInvoice(userId, invoice);
+  try {
+    const result = await bot.telegram.sendInvoice(userId, invoice);
+    console.log('Invoice sent successfully:', result);
+    return result;
+  } catch (error) {
+    console.error('Error sending invoice:', error);
+    throw error;
+  }
 }
 
 // pre_checkout → разрешаем платёж (при желании сверяем сумму)
