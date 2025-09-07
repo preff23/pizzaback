@@ -48,6 +48,18 @@ export function buildInvoice(userId: number, cart: any) {
     total: cart.total
   });
   
+  // Проверяем наличие provider_token
+  if (!process.env.TG_PROVIDER_TOKEN) {
+    console.error('TG_PROVIDER_TOKEN is not set!');
+    throw new Error('PROVIDER_TOKEN_NOT_SET');
+  }
+  
+  console.log('Provider token check:', {
+    tokenExists: !!process.env.TG_PROVIDER_TOKEN,
+    tokenLength: process.env.TG_PROVIDER_TOKEN?.length || 0,
+    tokenPrefix: process.env.TG_PROVIDER_TOKEN?.substring(0, 15) + '...' || 'undefined'
+  });
+  
   const prices: LabeledPrice[] = cart.items.map((it: any) => {
     const amount = toKopecks((it.price || 0) * (it.qty || 1));
     console.log('Item price calculation:', {
@@ -85,6 +97,15 @@ export function buildInvoice(userId: number, cart: any) {
     need_phone_number: false,
     need_email: false,
   };
+  
+  console.log('Final invoice object:', {
+    title: invoice.title,
+    description: invoice.description,
+    currency: invoice.currency,
+    prices: invoice.prices,
+    provider_token_length: invoice.provider_token?.length || 0,
+    provider_token_prefix: invoice.provider_token?.substring(0, 10) + '...' || 'undefined'
+  });
   
   // Логируем сформированный инвойс (без токенов)
   console.log('Invoice built:', {
