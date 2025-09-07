@@ -41,46 +41,10 @@ export function getUserOrders(userId: number): any[] {
 }
 
 export function buildInvoice(userId: number, cart: any) {
-  console.log('Building invoice for cart:', {
-    userId,
-    cartId: cart.id,
-    items: cart.items,
-    total: cart.total
-  });
-  
-  // Проверяем наличие provider_token
-  if (!process.env.TG_PROVIDER_TOKEN) {
-    console.error('TG_PROVIDER_TOKEN is not set!');
-    throw new Error('PROVIDER_TOKEN_NOT_SET');
-  }
-  
-  console.log('Provider token check:', {
-    tokenExists: !!process.env.TG_PROVIDER_TOKEN,
-    tokenLength: process.env.TG_PROVIDER_TOKEN?.length || 0,
-    tokenPrefix: process.env.TG_PROVIDER_TOKEN?.substring(0, 15) + '...' || 'undefined'
-  });
-  
-  const prices: LabeledPrice[] = cart.items.map((it: any) => {
-    const amount = toKopecks((it.price || 0) * (it.qty || 1));
-    console.log('Item price calculation:', {
-      name: it.name,
-      price: it.price,
-      qty: it.qty,
-      amount: amount,
-      kopecks: amount
-    });
-    return {
-      label: it.name,
-      amount: amount
-    };
-  });
-  
-  // Проверяем минимальную сумму для ЮKassa (минимум 50 рублей = 5000 копеек)
-  const totalAmount = prices.reduce((sum, price) => sum + price.amount, 0);
-  if (totalAmount < 5000) {
-    console.error('Amount too low for ЮKassa:', { totalAmount, kopecks: totalAmount });
-    throw new Error('MINIMUM_AMOUNT_TOO_LOW');
-  }
+  const prices: LabeledPrice[] = cart.items.map((it: any) => ({
+    label: it.name,
+    amount: toKopecks((it.price || 0) * (it.qty || 1))
+  }));
   
   const payload = `order:${cart.id}|user:${userId}|ts:${Date.now()}`;
   
@@ -98,56 +62,18 @@ export function buildInvoice(userId: number, cart: any) {
     need_email: false,
   };
   
-  console.log('Final invoice object:', {
-    title: invoice.title,
-    description: invoice.description,
-    currency: invoice.currency,
-    prices: invoice.prices,
-    provider_token_length: invoice.provider_token?.length || 0,
-    provider_token_prefix: invoice.provider_token?.substring(0, 10) + '...' || 'undefined'
-  });
-  
-  // Логируем сформированный инвойс (без токенов)
-  console.log('Invoice built:', {
-    title: invoice.title,
-    description: invoice.description,
-    currency: invoice.currency,
-    prices: invoice.prices,
-    payload: invoice.payload,
-    userId
-  });
-  
   return invoice;
 }
 
 // Отправка инвойса пользователю
 export async function sendInvoiceToUser(userId: number, cart: any, bot: Telegraf) {
-  console.log('sendInvoiceToUser called with:', { userId, cart });
-  
   if (!cart || !cart.items?.length) {
-    console.error('Empty cart error');
     throw new Error('EMPTY_CART');
   }
   
   const invoice = buildInvoice(userId, cart);
   
-  console.log('Sending invoice to user:', {
-    userId,
-    title: invoice.title,
-    currency: invoice.currency,
-    prices: invoice.prices,
-    payload: invoice.payload,
-    provider_token: invoice.provider_token ? 'SET' : 'NOT_SET'
-  });
-  
-  try {
-    const result = await bot.telegram.sendInvoice(userId, invoice);
-    console.log('Invoice sent successfully:', result);
-    return result;
-  } catch (error) {
-    console.error('Error sending invoice:', error);
-    throw error;
-  }
+  return bot.telegram.sendInvoice(userId, invoice);
 }
 
 // pre_checkout → разрешаем платёж (при желании сверяем сумму)
